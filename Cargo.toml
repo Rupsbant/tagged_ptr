@@ -1,0 +1,6 @@
+[package]
+name = "tagged_ptr"
+version = "0.1.0"
+authors = ["Ruben Lapauw <Ruben.Lapauw@cs.kuleuven.be>"]
+
+[dependencies]
