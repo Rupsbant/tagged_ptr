@@ -24,6 +24,7 @@ pub trait Packable3 {
     unsafe fn pack(&self) -> usize;
     unsafe fn unpack(usize) -> Self;
 }
+/// Implementation for pointers that are aligned on a multiple of 8.
 impl<T> Packable3 for *const T {
     unsafe fn pack(&self) -> usize {
         assert!(std::mem::align_of::<T>() >= 8);
@@ -58,7 +59,9 @@ impl<'a, T> Packable3 for &'a mut T {
         &mut *ptr as &'a mut T
     }
 }
+
 impl<T> Packable3 for Box<T> {
+    // The allocation of Box is always aligned on a multiple of 8 by the allocator.
     unsafe fn pack(&self) -> usize {(&**self as *const T as usize) >> BITSIZE}
     unsafe fn unpack(data:usize) -> Self {
         let ptr = (data << BITSIZE) as *mut T;
@@ -66,6 +69,7 @@ impl<T> Packable3 for Box<T> {
     }
 }
 impl<T> Packable3 for Rc<T> {
+    // The allocation of Rc is always aligned on a multiple of 8 by the allocator.
     unsafe fn pack(&self) -> usize {(&**self as *const T as usize) >> BITSIZE}
     unsafe fn unpack(data:usize) -> Self {
         let ptr = (data << BITSIZE) as *mut T;

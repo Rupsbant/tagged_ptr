@@ -13,9 +13,15 @@ pub enum Unpacked<A=(),B=(),C=(),D=(),E=(),F=(),G=(),H=()> {
     A(A), B(B), C(C), D(D),
     E(E), F(F), G(G), H(H)
 }
-/// A safe library for tagged union pointers. This library supports putting up to 8 `Packable3` types in a 64-bit word. A type can implement `Packable3` if it supports a bijection to a 61-bit number. The supported operations are packing, unpacking, unpacked references for matching and mutation.
+/// A safe library for tagged union pointers. This library supports putting up to 8 `Packable3`
+/// types in a 64-bit word. A type can implement `Packable3` if it supports a bijection to a
+/// 61-bit number. The supported operations are packing, unpacking, unpacked references for
+/// matching and mutation.
 ///
-/// Provided types are `()`, `bool`, `u16`, `u32`, `i16`, `i32`, `f32`, `&'a T'`, `Rc<T>`,`Box<T>`, `*T`, `*mut T`.
+/// Provided types are `()`, `bool`, `u16`, `u32`, `i16`, `i32`, `f32`, `&'a T'`, `Rc<T>`,`Box<T>`,
+/// `*T`, `*mut T`.
+/// Reference and pointer types need an alignment of a multiple of 8. There is a run-time check:
+/// `std::mem::align_of::<T>() >= 8`.
 ///
 /// ## Example
 ///
