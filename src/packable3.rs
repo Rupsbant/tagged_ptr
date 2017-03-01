@@ -6,7 +6,21 @@ use std::rc::Rc;
 use std;
 use super::*;
 
-
+/// The `Packable3` trait is used to fit an object inside a 61-bit number. This trait is unsafe as
+/// it can transmute and alias objects, it can also break Rust's borrowing and memory model.
+/// # Examples
+///
+/// Safe implementations of Packable3 are types that do not implement Drop, such as small numbers.
+///
+/// ```
+/// impl Packable3 for u32 {
+///     unsafe fn pack(&self) -> usize {*self as usize}
+///     unsafe fn unpack(data: usize) -> Self {assert!(data <= (u32::max_value() as usize)); data as u32}
+/// }
+/// fn main() {
+///     let _x = 5.pack();
+/// }
+/// ```
 pub trait Packable3 {
     unsafe fn pack(&self) -> usize;
     unsafe fn unpack(usize) -> Self;
@@ -53,6 +67,14 @@ impl Packable3 for u32 {
     unsafe fn pack(&self) -> usize {*self as usize}
     unsafe fn unpack(data: usize) -> Self {assert!(data <= (u32::max_value() as usize)); data as u32}
 }
+impl Packable3 for i16 {
+    unsafe fn pack(&self) -> usize {*self as usize}
+    unsafe fn unpack(data: usize) -> Self {data as i16}
+}
+impl Packable3 for i32 {
+    unsafe fn pack(&self) -> usize {*self as usize}
+    unsafe fn unpack(data: usize) -> Self {data as i32}
+}
 impl Packable3 for f32 {
     unsafe fn pack(&self) -> usize {std::mem::transmute::<f32, u32>(*self) as usize}
     unsafe fn unpack(data: usize) -> Self {std::mem::transmute::<u32, f32>(data as u32)}
@@ -60,4 +82,14 @@ impl Packable3 for f32 {
 impl Packable3 for () {
     unsafe fn pack(&self) -> usize {0}
     unsafe fn unpack(d: usize) -> Self {assert!(d == 0); ()}
+}
+
+#[test]
+fn test_shift() {
+    unsafe{
+        let x : i32 = -10;
+        let y = x.pack() << 3;
+        let z : i32 = Packable3::unpack(y >> 3);
+        assert_eq!(x, z);
+    }
 }

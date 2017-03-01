@@ -7,6 +7,9 @@ use std::ops::{Deref, DerefMut};
 use super::packable3::Packable3;
 use super::*;
 
+///
+///
+///
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Unpacked<A=(),B=(),C=(),D=(),E=(),F=(),G=(),H=()> {
     A(A), B(B), C(C), D(D),
@@ -212,7 +215,7 @@ mod test {
 
     #[test]
     fn test_pack_mut_drop() {
-        let rc = Box::new(Rc::new(16));
+        let rc = Rc::new(16);
         let weak = Rc::downgrade(&rc);
         let x: X = Unpacked::B(rc);
         let mut y: Y = x.pack();
@@ -225,7 +228,7 @@ mod test {
 
     #[test]
     fn test_pack_drop() {
-        let rc = Box::new(Rc::new(16));
+        let rc = Rc::new(16);
         let weak = Rc::downgrade(&rc);
         let x: X = Unpacked::B(rc);
         let y: Y = x.pack();
