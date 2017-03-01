@@ -7,14 +7,36 @@ use std::ops::{Deref, DerefMut};
 use super::packable3::Packable3;
 use super::*;
 
-///
-///
-///
+/// An enum with 8 generic options.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Unpacked<A=(),B=(),C=(),D=(),E=(),F=(),G=(),H=()> {
     A(A), B(B), C(C), D(D),
     E(E), F(F), G(G), H(H)
 }
+/// A safe library for tagged union pointers. This library supports putting up to 8 `Packable3` types in a 64-bit word. A type can implement `Packable3` if it supports a bijection to a 61-bit number. The supported operations are packing, unpacking, unpacked references for matching and mutation.
+///
+/// Provided types are `()`, `bool`, `u16`, `u32`, `i16`, `i32`, `f32`, `&'a T'`, `Rc<T>`,`Box<T>`, `*T`, `*mut T`.
+///
+/// ## Example
+///
+/// ```
+/// use tagged_ptr::packable3::Packable3;
+/// use tagged_ptr::tagged_ptr::Packed;
+/// type ThinVal = Packed<Box<u64>, Box<u64>, f32, u32, bool>;
+/// #[test]
+/// fn test_example() {
+///     let mut y : ThinVal = Unpacked::C(1.6f32).pack();
+///     match *y.unpack_mut() {
+///         Unpacked::A(ref mut b) => **b += 1,
+///         Unpacked::B(ref mut b) => **b += 5,
+///         Unpacked::C(ref mut f) => {*f += 4.8f32},
+///         Unpacked::D(ref mut u) => *u += 2,
+///         Unpacked::E(ref mut b) => *b ^= true,
+///         _ => panic!()
+///     }
+///     println!("{:?}", y.unpack());
+/// }
+/// ```
 pub struct Packed<A=(),B=(),C=(),D=(),E=(),F=(),G=(),H=()> where
     A: Packable3, B: Packable3, C: Packable3, D: Packable3,
     E: Packable3, F: Packable3, G: Packable3, H: Packable3 {

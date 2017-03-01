@@ -13,12 +13,11 @@ use super::*;
 /// Safe implementations of Packable3 are types that do not implement Drop, such as small numbers.
 ///
 /// ```
-/// impl Packable3 for u32 {
-///     unsafe fn pack(&self) -> usize {*self as usize}
-///     unsafe fn unpack(data: usize) -> Self {assert!(data <= (u32::max_value() as usize)); data as u32}
-/// }
+/// use tagged_ptr::packable3::Packable3;
 /// fn main() {
-///     let _x = 5.pack();
+///     let x = unsafe{5u32.pack()};
+///     let y = unsafe{u32::unpack(x)};
+///     assert_eq!(5, y)
 /// }
 /// ```
 pub trait Packable3 {
