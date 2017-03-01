@@ -238,13 +238,15 @@ mod test {
     #[test]
     fn test_pack_mut_drop() {
         let rc = Rc::new(16);
-        let weak = Rc::downgrade(&rc);
+        let rcy = rc.clone();
         let x: X = Unpacked::B(rc);
+        assert!(Rc::strong_count(&rcy) == 2);
         let mut y: Y = x.pack();
         {
             *y.unpack_mut() = Unpacked::A(SafeDrop(10));
         }
-        assert!(Weak::upgrade(&weak) == None);
+        assert!(Rc::strong_count(&rcy) == 1);
+        drop(rcy);
         assert!(get_safe(y.unpack()) == 10);
     }
 
@@ -256,21 +258,6 @@ mod test {
         let y: Y = x.pack();
         drop(y);
         assert!(Weak::upgrade(&weak) == None);
-    }
-
-    type ThinVal = Packed<Box<u64>, Box<u64>, f32, u32, bool>;
-    #[test]
-    fn test_example() {
-        let mut y : ThinVal = Unpacked::C(1.6f32).pack();
-        match *y.unpack_mut() {
-            Unpacked::A(ref mut b) => **b += 1,
-            Unpacked::B(ref mut b) => **b += 5,
-            Unpacked::C(ref mut f) => {*f += 4.8f32},
-            Unpacked::D(ref mut u) => *u += 1,
-            Unpacked::E(ref mut b) => *b ^= true,
-            _ => panic!()
-        }
-        println!("{:?}", y.unpack());
     }
 
 }

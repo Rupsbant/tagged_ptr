@@ -1,4 +1,5 @@
 #![feature(rc_raw)]
+#![feature(asm)]
 
 pub mod tagged_ptr;
 pub mod packable3;

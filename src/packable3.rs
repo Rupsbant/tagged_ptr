@@ -25,34 +25,52 @@ pub trait Packable3 {
     unsafe fn unpack(usize) -> Self;
 }
 impl<T> Packable3 for *const T {
-    unsafe fn pack(&self) -> usize {(*self as usize) >> BITSIZE}
-    unsafe fn unpack(data: usize) -> Self {(data << BITSIZE) as Self}
+    unsafe fn pack(&self) -> usize {
+        assert!(std::mem::align_of::<T>() >= 8);
+        (*self as usize) >> BITSIZE
+    }
+    unsafe fn unpack(data: usize) -> Self {
+        assert!(std::mem::align_of::<T>() >= 8);
+        (data << BITSIZE) as Self
+    }
 }
 impl<T> Packable3 for *mut T {
-    unsafe fn pack(&self) -> usize {(*self as usize) >> BITSIZE}
-    unsafe fn unpack(data: usize) -> Self {(data << BITSIZE) as Self}
+    unsafe fn pack(&self) -> usize {
+        assert!(std::mem::align_of::<T>() >= 8);
+        (*self as usize) >> BITSIZE
+    }
+    unsafe fn unpack(data: usize) -> Self {
+        assert!(std::mem::align_of::<T>() >= 8);
+        (data << BITSIZE) as Self
+    }
 }
 impl<'a, T> Packable3 for &'a T {
     unsafe fn pack(&self) -> usize {(*self as *const T).pack()}
     unsafe fn unpack(data: usize) -> Self {
-        let ptr: *const T = Packable3::unpack(data);
+        let ptr : *const T = Packable3::unpack(data);
         &*ptr as &'a T
     }
 }
 impl<'a, T> Packable3 for &'a mut T {
     unsafe fn pack(&self) -> usize {(*self as *const T).pack()}
     unsafe fn unpack(data: usize) -> Self {
-        let ptr: *mut T = Packable3::unpack(data);
+        let ptr : *mut T = Packable3::unpack(data);
         &mut *ptr as &'a mut T
     }
 }
 impl<T> Packable3 for Box<T> {
-    unsafe fn pack(&self) -> usize {(&**self).pack()}
-    unsafe fn unpack(data:usize) -> Self {Box::from_raw(Packable3::unpack(data))}
+    unsafe fn pack(&self) -> usize {(&**self as *const T as usize) >> BITSIZE}
+    unsafe fn unpack(data:usize) -> Self {
+        let ptr = (data << BITSIZE) as *mut T;
+        Box::from_raw(ptr)
+    }
 }
 impl<T> Packable3 for Rc<T> {
-    unsafe fn pack(&self) -> usize {(&**self).pack()}
-    unsafe fn unpack(data:usize) -> Self {Rc::from_raw(Packable3::unpack(data))}
+    unsafe fn pack(&self) -> usize {(&**self as *const T as usize) >> BITSIZE}
+    unsafe fn unpack(data:usize) -> Self {
+        let ptr = (data << BITSIZE) as *mut T;
+        Rc::from_raw(ptr)
+    }
 }
 impl Packable3 for bool {
     unsafe fn pack(&self) -> usize {*self as usize}
@@ -90,5 +108,24 @@ fn test_shift() {
         let y = x.pack() << 3;
         let z : i32 = Packable3::unpack(y >> 3);
         assert_eq!(x, z);
+    }
+}
+#[test]
+#[should_panic(expected = "assertion failed")]
+fn test_panic_alignment_u16() {
+    let x = 5u16;
+    let y : &u16 = &x;
+    unsafe{
+        let _ = (&y).pack();
+    }
+}
+#[test]
+#[should_panic(expected = "assertion failed")]
+fn test_panic_alignment_u32() {
+    let x = 5u32;
+    let y = &x;
+    unsafe{
+        let z = (&y).pack();
+        println!("{}", z&15);
     }
 }
