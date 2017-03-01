@@ -5,7 +5,7 @@
 
 A safe library for tagged union pointers. This library supports putting up to 8 `Packable3` types in a 64-bit word. A type can implement `Packable3` if it supports a bijection to a 61-bit number. The supported operations are packing, unpacking, unpacked references for matching and mutation.
 
-Provided types are `()`, `bool`, `u16`, `u32`, `f32`, `<'a, T> &'a T'`, `<T> Box<T>`, `<T> *T`, `<T> *mut T`.
+Provided types are `()`, `bool`, `u16`, `u32`, `f32`, `&'a T'`, `Rc<T>`,`Box<T>`, `*T`, `*mut T`.
 
 ## Example
 
@@ -38,7 +38,7 @@ fn test_example() {
 Add this to your Cargo.toml:
 
     [dependencies]
-    tagged_ptr = "0.7"
+    tagged_ptr = "0.1"
 
 and this to your crate root:
 
