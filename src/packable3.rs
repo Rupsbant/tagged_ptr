@@ -1,3 +1,6 @@
+#[cfg(not(target_pointer_width = "64"))]
+const ERROR: () = "Pointer size should be 64 bits";
+
 use std::boxed::Box;
 use std::rc::Rc;
 use std;
@@ -51,10 +54,8 @@ impl Packable3 for u32 {
     unsafe fn unpack(data: usize) -> Self {assert!(data <= (u32::max_value() as usize)); data as u32}
 }
 impl Packable3 for f32 {
-    unsafe fn pack(&self) -> usize {std::mem::transmute::<f32, u32>(*self) as usize
-}
-    unsafe fn unpack(data: usize) -> Self {std::mem::transmute::<u32, f32>(data as u32)
-}
+    unsafe fn pack(&self) -> usize {std::mem::transmute::<f32, u32>(*self) as usize}
+    unsafe fn unpack(data: usize) -> Self {std::mem::transmute::<u32, f32>(data as u32)}
 }
 impl Packable3 for () {
     unsafe fn pack(&self) -> usize {0}

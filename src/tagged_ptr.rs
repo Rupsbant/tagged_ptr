@@ -174,9 +174,9 @@ mod test {
         unsafe fn unpack(l: usize) -> SafeDrop {SafeDrop(Packable3::unpack(l))}
     }
     type X = Unpacked<
-        SafeDrop,Box<Rc<u32>>,Box<u64>>;
+        SafeDrop,Rc<u32>,Box<u64>>;
     type Y = Packed<
-        SafeDrop,Box<Rc<u32>>,Box<u64>>;
+        SafeDrop,Rc<u32>,Box<u64>>;
 
     fn get_safe(unpacked: X) -> u16 {
         match unpacked {Unpacked::A(ref x) => x.0, _ => panic!()}

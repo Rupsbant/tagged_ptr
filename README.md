@@ -3,11 +3,9 @@
 ## What is it?
 ##### This library is unstable and may contain bugs!
 
-A safe library for tagged union pointers. This library supports putting up to 8 `Packable` types in a 64-bit word. A type can implement `Packable` if it supports a bijection to a 61-bit number. The supported operations are packing, unpacking, unpacked references for matching and mutation.
+A safe library for tagged union pointers. This library supports putting up to 8 `Packable3` types in a 64-bit word. A type can implement `Packable3` if it supports a bijection to a 61-bit number. The supported operations are packing, unpacking, unpacked references for matching and mutation.
 
 Provided types are `()`, `bool`, `u16`, `u32`, `f32`, `<'a, T> &'a T'`, `<T> Box<T>`, `<T> *T`, `<T> *mut T`.
-
-
 
 ## Example
 
