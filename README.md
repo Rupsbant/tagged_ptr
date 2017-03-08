@@ -47,6 +47,7 @@ and this to your crate root:
 ## Changelog
 
 * 0.1.0 Added 64-bit tagged union pointer without documentation.
+* 0.1.1 Fixing alignment issue for *u32 and *u16.
 
 ## License
 
