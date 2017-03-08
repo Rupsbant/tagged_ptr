@@ -1,6 +1,6 @@
 [package]
 name = "tagged_ptr"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ruben Lapauw <Ruben.Lapauw@cs.kuleuven.be>"]
 
 # A short blurb about the package. This is not rendered in any format when
